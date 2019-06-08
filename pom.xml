@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.github.cmcrobotics.stopmotion</groupId>
+	<artifactId>stopmotion</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>Cineglobe Stop Motion :: Reactor project</name>
+	<description>A web application to record stop motion animation with integrated robotic camera control.</description>
+    <url>https://github.com/cmcrobotics/cineglobe-stopmotion</url>
+    
+    <organization>
+        <name>CERN Micro Club</name>
+        <url>http://cern.ch/cmc</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>GPLv3</name>
+            <url>https://opensource.org/licenses/GPL-3.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <developers>
+        <developer>
+            <id>bcopy</id>
+            <name>Brice Copy</name>
+            <email>brice.copy@gmail.com</email>
+        </developer>
+    </developers>
+
+
+    <scm>
+        <url>https://github.com/cmcrobotics/cineglobe-stopmotion</url>
+        <connection>scm:git:git://github.com/cmcrobotics/cineglobe-stopmotion.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/cmcrobotics/cineglobe-stopmotion.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.parameters>true</maven.compiler.parameters>
+		<base.image>openjdk:8-jdk-alpine</base.image>
+		<image.name>stopmotion</image.name>
+	</properties>
+
+	<profiles>
+	  <profile>
+	    <id>rpi3</id>
+	    <properties>
+		   <base.image>resin/raspberrypi3-alpine-openjdk:8-jdk</base.image>
+		   <image.name>cineglobe-stopmotion</image.name>
+		 </properties>
+      </profile>
+	  <profile>
+	    <id>gitlab-x64</id>
+	    <properties>
+		   <image.name>cineglobe-stopmotion</image.name>
+		 </properties>
+      </profile>
+	</profiles>
+   
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>webjars-locator-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+    
+	
+	
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.jamesward</groupId>
+                <artifactId>unsnapshot-maven-plugin</artifactId>
+                <version>0.2</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unsnapshot</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.reformanda.semper</groupId>
+                <artifactId>dependencyversion-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>set-all</id>
+                        <goals>
+                            <goal>set-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                       <goals>
+                          <goal>repackage</goal>
+                          <goal>build-info</goal>
+                       </goals>
+                    </execution>
+                </executions>
+				<configuration>
+				    <mainClass>com.github.cmcrobotics.stopmotion.Application</mainClass>
+				    <layout>ZIP</layout>
+					<addResources>true</addResources>
+					<executable>true</executable>
+				</configuration>
+	       </plugin>
+
+            <!-- Skip deployment, we use jitpack.io -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration> <skip>true</skip> </configuration>
+            </plugin>
+	
+            <plugin>
+               <groupId>com.google.cloud.tools</groupId>
+               <artifactId>jib-maven-plugin</artifactId>
+               <version>1.3.0</version>
+               <configuration>
+                  <from> <image>${base.image}</image> </from>
+                  <to> <image>${image.name}</image> </to>
+               </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.1.4.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>
