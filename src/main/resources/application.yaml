@@ -1,0 +1,8 @@
+spring.mvc.favicon.enabled: false
+
+
+logging.level:
+  org.springframework: WARN
+  org.hibernate: WARN
+  org.springframework.web: DEBUG
+  
