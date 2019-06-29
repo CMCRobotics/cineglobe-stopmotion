@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
-    <!-- Material Design for Bootstrap fonts and icons -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
-    <style>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    
+   <style>
         html, body {
           height: 100%;
           margin: 0;
@@ -16,49 +16,55 @@
     </style>
   </head>
 
-  <body>
+  <body style="padding-left: 0px; padding-right: 0px;">
 
-<div class="container-fluid h-100">
-<div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-overlay">
-  <header class="bmd-layout-header">
-    <div class="navbar navbar-light bg-faded">
-      <button class="navbar-toggler btn-raised" type="button" data-toggle="drawer" data-target="#dw-s2">
-        <span class="sr-only">Toggle drawer</span>
-        <i class="material-icons">menu</i>
-      </button>
-      <ul class="nav navbar-nav">
-        <li class="nav-item">My Application</li>
-      </ul>
-    </div>
-  </header>
-  <div id="dw-s2" class="bmd-layout-drawer bg-faded">
-    <header>
-      <a class="navbar-brand">Title</a>
-    </header>
-    <ul class="list-group">
-      <a class="list-group-item active">Link 1</a>
-      <a class="list-group-item">Link 2</a>
-      <a class="list-group-item">Link 3</a>
-    </ul>
+<div class="container-fluid h-90" style="padding:0;">
+   <div class="container-fluid" style="z-index:-10; padding:10px; text-align:center; position: absolute;">
+     <img id="myImage" crossOrigin="anonymous" class="img-fluid" src="http://ergo-twelve.home:8000/stream.mjpg">
+      
+   
+      <!--img class="img-fluid" crossOrigin="anonymous" src="https://via.placeholder.com/1024x780.png?text=Live+Feed"-->
+   </div>
+   
+
+
+
+   
+   <div class="container-fluid" style="z-index:0; padding:5px;">
+      <button type="button" id="save"  class="btn btn-light" >Save to PNG</button>
+      <button type="button" id="step"  class="btn btn-primary" >Step </button>
+      <button type="button" id="undo"  class="btn btn-secondary" >Undo </button>
+      <button type="button" id="reset" class="btn btn-light" >Reset</button>
+      <button type="button" id="release" class="btn btn-light" >Release</button>
   </div>
-  <main class="bmd-layout-content">
-   <div class="container-fluid" style="width:100%;z-index:-10; position: absolute;">
-      <img class="img-fluid" src="https://en.ipcams.ch/getCamHandlerMjpg.aspx?nr=856&rand=9576">
-   </div>
-   <div class="container-fluid" style="z-index:0">
-      <h1>hello big world that I love</h1>
-   </div>
-  </main>
 </div>
 </div>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
-    <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+    
+     <script type="text/javascript">
+document.getElementById('save').onclick = function () {
+
+var c = document.createElement('canvas');
+var img = document.getElementById('myImage');
+c.width = img.width;
+c.height = img.height;
+var ctx = c.getContext('2d');
+
+
+ctx.drawImage(img, 0, 0);
+window.open(c.toDataURL('image/png'))
+};
+
+</script>   
+    
+    <script type="module" src="app.js"></script>
+    
 
 </body>
 </html>
