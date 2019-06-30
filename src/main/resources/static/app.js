@@ -60,26 +60,6 @@ robot.connect().then(function(){
             [robot.m5.compliant , false],
             [robot.m6.compliant , false]);
   
-  robot.m1.goal_position.set(-60).then(response => console.log("moving ") )
-  .then(function(){
-  
-   /*   const registers = [robot.m1.goal_position, robot.m1.compliant];
-      robot.get(...registers).then( function(response){
-          console.log(registers.map( r => r.currentValue ));
-     */
-    /*      
-          robot.set([robot.m1.goal_position,10],[robot.m2.goal_position,20])
-             .then(function(response){
-                     console.log("Completed");
-                     const motors = [robot.m1.goal_position, robot.m2.goal_position];
-                     robot.get(...motors).then( resp =>
-                         console.log(motors.map( r => r.currentValue )));
-             });
-             
-     */
-     // });
-  });
-  
   tween = new TWEEN.Tween(position);
   tween.to(endPosition, steps);
   tween.start(0);
