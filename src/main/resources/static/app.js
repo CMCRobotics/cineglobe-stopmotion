@@ -1,11 +1,14 @@
 import {PoppyRobot} from './poppy/PoppyRobot.js';
-import {$,jQuery} from 'https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js';
+let onAddSlideCallback = null;
+export default function(liveImgElement, onStepCallback, onAddSlideCallback, webmEncoder, config){
+	
+}
 
-export const robot = new PoppyRobot("http://192.168.43.198:8080");
+const robot = new PoppyRobot("http://192.168.1.44:8080");
 
-//export const robot = new PoppyRobot("http://ergo-nine.cern.ch:8080");
+let slides = [];
 
-//export const robot = new PoppyRobot("http://localhost:8080");
+let webpFrames = [];
 
 let stepCount = 0;
 let steps = 10;
@@ -17,20 +20,20 @@ var startPosition = {m1:10, m2:-30, m3:-30, m4:50,m5:30};
 var position = Object.assign({}, startPosition);
 var endPosition = { m1: 10, m2:-18, m3:-40, m4:20,m5:50 };
 
-jQuery( document ).ready(function( $ ) {
-		$( '#my-slider' ).sliderPro({
-		height:480,
-		width:800,
-		responsive: false,
-		touchSwipe:false,
-		arrows:true, 
-		buttons:false,
-		autoplay:false,
-		loop:false});
-	
-	});
-	
-
+function encode(title) {
+    if (!this.audioBlob)
+      return webm.encode(title, this.w, this.h, this.frameTimeout(), this.frameWebps, null);
+    let fr = new FileReader();
+    let an = this;
+    let promise = new Promise((resolve, reject) => {
+      fr.addEventListener("loadend", evt => {
+        webm.encode(title, an.w, an.h, an.frameTimeout(), an.frameWebps, fr.result)
+            .then(resolve);
+      });
+      fr.readAsArrayBuffer(an.audioBlob);
+    });
+    return promise;
+  }
 function stepPosition(){
     var c = document.createElement('canvas');
     var img = document.getElementById('myImage');
@@ -42,9 +45,22 @@ function stepPosition(){
     
     slides.push(c.toDataURL('image/jpeg',0.95));
     
+    let promise = new Promise(((resolve, reject) => {
+        if (self.requestIdleCallback) {
+          requestIdleCallback(() => {
+            c.toBlob(blob => { resolve(blob) }, 'image/webp');
+          });
+        } else {
+          c.toBlob(blob => { resolve(blob) }, 'image/webp');
+        }
+      }));
+    webpFrames.push(promise);
+      
     $(".sp-slides").append("<div class='sp-slide'><img src='"+slides[slides.length-1]+"''></div>");      
     $('#my-slider' ).sliderPro( 'update' );
     $('#my-slider' ).sliderPro( 'gotoSlide', slides.length );
+    
+    
 
     if(motionEnabled){
         tween.update(stepCount);
@@ -59,15 +75,15 @@ function stepPosition(){
         if(stepCount < steps) stepCount++;
     }
 }
-$("#step").on("click", function(){
+jQuery("#step").on("click", function(){
         stepPosition();
 });
 
-$("#reset").on("click", function(){
+jQuery("#reset").on("click", function(){
         stepCount = 0;
         stepPosition();
 });
-$("#undo").on("click", function(){
+jQuery("#undo").on("click", function(){
          if(motionEnabled){
              stepCount=stepCount-2;
              if (stepCount < 0) stepCount = 0;
@@ -75,25 +91,30 @@ $("#undo").on("click", function(){
          }
 });
 
-$("#release").on("click", function(){
-        robot.set([robot.m1.compliant , true],
-                  [robot.m2.compliant , true],
-                  [robot.m3.compliant , true],
-                  [robot.m4.compliant , true],
-                  [robot.m5.compliant , true],
-                  [robot.m6.compliant , true]);
+jQuery("#release").on("click", function(){
+        robot.setAll('compliant' , true);
   
+});
+
+jQuery("#save").on("click", function(){
+    webm.encode("My video", 800, 480, 1000.0/7, webpFrames, null)
+      .then(blob => {
+        this.exported = blob;
+        let url = URL.createObjectURL(blob);
+        let downloadLink = document.createElement('a');
+        downloadLink.download = filename;
+        downloadLink.href = url;
+        downloadLink.click();
+        URL.revokeObjectURL(url);
+        return blob;
+      });
+
 });
 
 robot.connect().then(function(){
   console.log(robot);
   
-  robot.set([robot.m1.compliant , false],
-            [robot.m2.compliant , false],
-            [robot.m3.compliant , false],
-            [robot.m4.compliant , false],
-            [robot.m5.compliant , false],
-            [robot.m6.compliant , false]);
+  robot.setAll('compliant', false);
   
   tween = new TWEEN.Tween(position);
   tween.to(endPosition, steps);
