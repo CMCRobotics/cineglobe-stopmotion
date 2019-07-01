@@ -1,14 +1,15 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slider-pro/1.5.0/css/slider-pro.min.css">
-    <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/webjars/slider-pro/dist/css/slider-pro.min.css">
+    <link rel="stylesheet" href="app.css">  
     
    <style>
        /* html, body {
@@ -22,7 +23,7 @@
 
 <div class="container-fluid w-100 h-90" style="padding:0">
    <div style="z-index:-10; padding:0px; width:100%; height:375px;text-align:center;">
-     <img id="myImage" crossOrigin="anonymous" class="img-responsive" src="http://192.168.43.198:8000/stream.mjpg">
+     <img id="myImage" crossOrigin="anonymous" class="img-responsive" src="http://192.168.1.44:8000/stream.mjpg">
    </div>
    
 
@@ -33,6 +34,7 @@
                     <button type="button" id="undo"  class="btn btn-secondary navbar-btn" >Undo</button>
                     <button type="button" id="reset" class="btn btn-light navbar-btn" >Reset</button>
                     <button type="button" id="release" class="btn btn-light navbar-btn" >Rel</button>
+                    <button type="button" id="save" class="btn btn-danger navbar-btn" >Save</button>
         </div>
     </nav>
   
@@ -51,25 +53,17 @@
 
 </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/slider-pro/1.5.0/js/jquery.sliderPro.min.js"></script>
+    <script src="/webjars/slider-pro/dist/js/jquery.sliderPro.min.js"></script>
 
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js"></script>
+    <script src="/webjars/axios/dist/axios.min.js"></script>
+    <script src="/webjars/tweenjs__tween.js/src/Tween.js"></script>
     
      <script type="text/javascript">
 
-var slides = [];
 var sliderInitialized = false;
-
-document.getElementById('save').onclick = function () {
-
-}
-
-
 
 jQuery( document ).ready(function( $ ) {
 		$( '#my-slider' ).sliderPro({
@@ -88,8 +82,8 @@ jQuery( document ).ready(function( $ ) {
 	
 </script>   
     
-    <script type="module" src="app.js"></script>
+    <script src="webm/webm.js"></script>
     
-
+    <script type="module" src="app.js"></script>
 </body>
 </html>
