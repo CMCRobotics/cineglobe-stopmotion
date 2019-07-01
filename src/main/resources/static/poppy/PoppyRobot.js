@@ -40,6 +40,12 @@ class PoppyRobot{
     set(...registerValueMap){
         return Promise.all(registerValueMap.map(kv => kv[0].set(kv[1])));
     }
+    
+    setAll(registerName, value){
+        return Array.from(this._motors).map( ([name, motor]) => 
+          motor[registerName].set(value)
+        );
+    }
 
 }
 
