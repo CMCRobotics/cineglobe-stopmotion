@@ -11,6 +11,8 @@ stopmotion:
     - ip: "192.168.1.44"
       name: "Camera 1"
 
+storage.location: "/tmp/stopmotion"
+
 ---
 spring:
   profiles: home

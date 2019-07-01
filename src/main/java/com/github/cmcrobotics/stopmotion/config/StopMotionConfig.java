@@ -1,12 +1,9 @@
-package com.github.cmcrobotics.stopmotion;
+package com.github.cmcrobotics.stopmotion.config;
 
 import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-
-import com.fasterxml.jackson.databind.jsonschema.JsonSerializableSchema;
 
 import lombok.Data;
 

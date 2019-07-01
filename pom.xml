@@ -126,6 +126,7 @@
             <artifactId>font-awesome</artifactId>
             <version>5.9.0</version>
         </dependency>
+        
     </dependencies>
     
 	
