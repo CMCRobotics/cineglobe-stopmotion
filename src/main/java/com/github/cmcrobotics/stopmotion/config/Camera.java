@@ -1,4 +1,4 @@
-package com.github.cmcrobotics.stopmotion;
+package com.github.cmcrobotics.stopmotion.config;
 
 import lombok.Data;
 
