@@ -13,3 +13,7 @@ buildNumber.properties
 .classpath
 .project
 .settings/
+/.apt_generated/
+/.vscode/
+*#
+.factorypath

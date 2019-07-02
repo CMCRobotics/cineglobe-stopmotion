@@ -1,0 +1,55 @@
+@startuml
+start
+repeat
+:New Movie
+----
+* Register new UUID
+* Robot to rest position blinking
+* reset TITLE, MUSIC, MOTION, SLIDESHOW, COUNTERS;
+:Setup Motion;
+fork
+  :Setup Motion for Camera
+  ----
+  * Camera list select
+  * Enabled ?
+  * Start
+  * End
+  * Steps
+  ;
+fork again 
+  :Switch camera
+  ----
+  Update Viewport HREF
+  ;
+fork again
+  :Onion skin
+  ----
+  * Select 0,1,2 or 3 layers
+  ;
+fork again
+  :Snap Current Camera
+  ----
+  * Photo
+  * Update onion skin
+  * Step inc;
+fork again
+  :Undo Current Camera
+  ----
+  * Step back  
+  * Update onion skin
+  * Remove photo;
+fork again
+  partition Download {
+  :Specify movie details
+  ----
+  * Movie TITLE
+  * Background MUSIC;
+  :Upload;
+  :Convert;
+  :Download link;
+  }
+end fork
+repeat while (New movie?) is (yes)
+-> no;
+end
+@enduml
