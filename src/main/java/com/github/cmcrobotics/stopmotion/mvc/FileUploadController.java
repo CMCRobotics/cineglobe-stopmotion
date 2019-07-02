@@ -1,6 +1,8 @@
 package com.github.cmcrobotics.stopmotion.mvc;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,15 +51,23 @@ public class FileUploadController {
                 "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 
+    @PostMapping("/uploadmulti")
+    public String uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, RedirectAttributes redirectAttributes) {
+        Arrays.asList(files).forEach(file -> storeFile(file, redirectAttributes));
+        return "redirect:/list";
+    }    
+    
     @PostMapping("/upload")
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
             RedirectAttributes redirectAttributes) {
+        storeFile(file, redirectAttributes);
+        return "redirect:/list";
+    }
 
+    public void storeFile(MultipartFile file, RedirectAttributes redirectAttributes) {
         storageService.store(file);
         redirectAttributes.addFlashAttribute("message",
                 "You successfully uploaded " + file.getOriginalFilename() + "!");
-
-        return "redirect:/list";
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)

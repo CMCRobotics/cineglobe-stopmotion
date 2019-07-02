@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.cmcrobotics.stopmotion.config.StopMotionConfig;
 
 @RestController
-public class RESTController {
+public class RESTConfigController {
     @Autowired
     StopMotionConfig config;
     

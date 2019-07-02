@@ -1,17 +1,24 @@
 spring.mvc.favicon.enabled: false
 server.port: 8081
 
+spring.servlet.multipart:
+  enabled: true
+  file-size-threshold: "2KB"
+  max-file-size: "200MB"
+  max-request-size: "215MB"
+
+
 logging.level:
   org.springframework: WARN
   org.hibernate: WARN
-  org.springframework.web: DEBUG
+  org.springframework.web: INFO
+  org.webjars: DEBUG
 
 stopmotion:
+  location: "/tmp/stopmotion"
   cameras:
     - ip: "192.168.1.44"
       name: "Camera 1"
-
-storage.location: "/tmp/stopmotion"
 
 ---
 spring:

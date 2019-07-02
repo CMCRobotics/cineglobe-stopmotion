@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.github.cmcrobotics.stopmotion.config.StorageProperties;
+import com.github.cmcrobotics.stopmotion.config.StopMotionConfig;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -22,7 +22,7 @@ public class FileSystemStorageService implements StorageService {
     private final Path rootLocation;
 
     @Autowired
-    public FileSystemStorageService(StorageProperties properties) {
+    public FileSystemStorageService(StopMotionConfig properties) {
         this.rootLocation = Paths.get(properties.getLocation());
     }
 

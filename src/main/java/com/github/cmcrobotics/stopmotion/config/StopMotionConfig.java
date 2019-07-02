@@ -12,4 +12,5 @@ import lombok.Data;
 public class StopMotionConfig implements Serializable {
     private static final long serialVersionUID = -2968261158073338700L;
     public List<Camera> cameras;
+    private String location = "upload-dir";
 }
