@@ -1,0 +1,13 @@
+    
+.navbar {
+    background-color: rgba(10,10,10,0.5);
+}
+
+.top-nav-collapse {
+    background-color: #4285F4;
+}
+
+.modal-backdrop {
+  width:100%;
+  height: 100%;
+}
