@@ -22,102 +22,127 @@
     </style>
   </head>
 
-  <body style="padding-left: 0px; padding-right: 0px;background-color:black">
-  <div class="modal fade" id="model-motion-setup">
-  <div class="modal-dialog">
-    <div class="modal-content">
+<body style="padding-left: 0px; padding-right: 0px;background-color:black">
 
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title">Modal Heading</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-
-      <!-- Modal body -->
-      <div class="modal-body">
-        Modal body..
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<div id="errorToast" class="toast" style="z-layer:1100;position: absolute; top: 0; right: 0;" data-autohide="false">
-  <div class="toast-header">
-    <strong class="mr-auto text-error">Sorry</strong>
-    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
-  </div>
-  <div class="toast-body">
-    Something went wrong, please try again or call for assistance.
-  </div>
-</div>
-
-
-
-<div class="container-fluid w-100 h-90" style="padding:0">
-   <div style="z-index:-10; padding:0px; width:100%; text-align:center;">
-     <!--  img id="myImage" crossOrigin="anonymous" class="img-responsive" src="http://ergo-nine.cern.ch:8000/stream.mjpg"-->
-     <img id="myImage" class="img-responsive" src="https://via.placeholder.com/800x480?text=Visit+Blogging.com+Now">
-   </div>
-   
-
-   <nav class="navbar fixed-top  navbar-expand-sm navbar-dark">
-        <a class="navbar-brand" href="#"><strong><img src="cineglobe-white.png" width="100"></strong></a>
-        <h2 style="user-select: none; color:#ffffff61; opacity:50%; max-width:200px; padding-top:5px">Camera 1</h2>
-        <div  id="navbarSupportedContent">
-                  <!-- <button type="button" id="undo"  class="btn btn-secondary navbar-btn" >Undo</button>
-                      <button type="button" id="step"  class="btn btn-primary navbar-btn" >Step <span id="steps-left" class="badge badge-light">10</span></button>
-                    <button type="button" id="reset" class="btn btn-light navbar-btn" >Reset</button>
-                    <button type="button" id="release" class="btn btn-light navbar-btn" >Rel</button>
-                    <button type="button" id="save" class="btn btn-danger navbar-btn" ><i class="fa fa-save"></i>Save</button>
-                    -->
+  <div id="model-motion-setup" class="modal fade" >
+    <div class="modal-dialog modal-lg" style="max-width: 90% !important;">
+      <div class="modal-content">
+  
+        <div class="modal-header">
+          <h4 class="modal-title">Camera Setup</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
-    </nav>
   
-  <div class="container fixed-top" style="top:15px;left:280px; z-index:1035">
-                        <a class="dropdown-toggle btn btn-primary" href="#" id="camera-switch" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Switch Camera
-                        </a>
-                        <div id="camera-dropdown-menu" class="dropdown-menu" aria-labelledby="camera-switch">
-                          <a class="dropdown-item" href="#">Camera 1</a>
-                          <a class="dropdown-item" href="#">Camera 2</a>
-                        </div>
-                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#model-motion-setup">Open Modal</button>
-                    <button type="button" id="save" class="btn btn-danger navbar-btn" ><i class="fa fa-save"></i>Save</button>
-   </div>
-   
-   <div class="container-fluid fixed-bottom w-100" style="padding:5px; z-index:1035">
-      <div style="text-align:right">
-                   <button type="button" id="undo"  class="btn btn-secondary navbar-btn" >Undo</button>
-                   <button type="button" id="step"  class="btn btn-primary navbar-btn" >Step <span id="steps-left" class="badge badge-light">10</span></button>
-                   <button type="button" id="reset" class="btn btn-light navbar-btn" >Reset</button>
-                   <button type="button" id="release" class="btn btn-light navbar-btn" >Rel</button>
-                    
-      </div>
-   </div>
-  
-    <div id="slider-container" class="container-fluid w-100 position-absolute" style="padding:0px; top:0px">
-      <div class="slider-pro" id="my-slider">
-            <div class="sp-slides">
-                <div class="sp-slide">
-                    <img class="sp-image" src="start.png"/>
+        <div class="modal-body">
+            <div class="row">
+               <div class="col-4 p-4">
+                   <form class="form">
+                    <div class="form-group row">
+                      <div class="custom-control custom-switch switch-lg">
+                        <input id="enable-motion" type="checkbox" class="custom-control-input">
+                        <label class="custom-control-label" for="enable-motion">Enable motion</label>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                        <button type="button" id="release-motors" class="btn btn-primary navbar-btn" >Release Motors</button>
+                    </div>
+                    <div class="form-group row">
+                        <div class="btn-group">
+                          <button type="button" id="set-start-position" class="btn btn-light navbar-btn" >Set Start</button>
+                          <button type="button" id="set-end-position" class="btn btn-light navbar-btn" >Set End</button>
+                          </div>
+                    </div>
+                    <div class="form-group row">
+                        <button type="button" id="preview-movement" class="btn btn-light navbar-btn" >Preview Movement</button>
+                    </div>
+                    <div class="form-group row">
+                      <label for="customRange">Steps</label>
+                      <div class="col-8">
+                      <input type="range" style="width:200px" class="custom-range" min="3" max="30" step="1" id="customRange" name="points1">
+                       </div>
+                    </div>
+                  </form>
+               </div>
+               <div class="col-8 p-2">
+                <div style="text-align:center">
+                  <img id="motion-preview" class="img-fluid" src="https://via.placeholder.com/400x240?text=Preview+Image">
                 </div>
-                
+                </div>
+            
             </div>
         </div>
-  </div>
   
+        <!-- div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div-->
+  
+      </div>
+    </div>
+  </div>
+
+  <div id="errorToast" class="toast" style="z-layer:1100;position: absolute; top: 80px; right: 0;" data-autohide="false">
+    <div class="toast-header">
+      <strong class="mr-auto text-error">Sorry</strong>
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+    </div>
+    <div class="toast-body">
+      Something went wrong, please try again or call for assistance.<br>
+      <small>( Details : <span id="error-toast-msg"></span> )</small>
+    </div>
+    
+  </div>
 
 
-</div>
 
-
-
+  <div class="container-fluid w-100 h-90" style="padding:0">
+     <div style="padding:0px; width:100%; text-align:center;">
+       <!--  img id="view-finder" crossOrigin="anonymous" class="img-responsive" src="http://ergo-nine.cern.ch:8000/stream.mjpg"-->
+       <img id="view-finder" class="img-responsive" src="start.png">
+     </div>
+     
+  
+     <nav class="navbar fixed-top  navbar-expand-sm navbar-dark">
+          <a class="navbar-brand" href="#"><strong><img src="cineglobe-white.png" width="100"></strong></a>
+          <div  id="navbarSupportedContent">
+          </div>
+      </nav>
+    
+    <div class="container fixed-top" style="top:15px;left:280px; z-index:1035">
+                          <a class="dropdown-toggle btn btn-primary" href="#" id="camera-switch" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span id="camera-label">Switch camera</span>
+                          </a>
+                          <div id="camera-dropdown-menu" class="dropdown-menu" aria-labelledby="camera-switch">
+                            <!-- a class="dropdown-item" href="#">Camera 1</a>
+                            <a class="dropdown-item" href="#">Camera 2</a-->
+                          </div>
+                      <button type="button" class="btn btn-info" data-toggle="modal" data-target="#model-motion-setup">Open Modal</button>
+                      <button type="button" id="save" class="btn btn-danger navbar-btn" ><i class="fa fa-save"></i>Save</button>
+     </div>
+     
+     <div class="container-fluid fixed-bottom w-100" style="padding:5px; z-index:1035">
+        <div style="text-align:right">
+                     <button type="button" id="undo"  class="btn btn-secondary navbar-btn" >Undo</button>
+                     <button type="button" id="step"  class="btn btn-primary navbar-btn" >Step <span id="steps-left" class="badge badge-light">10</span></button>
+                     <!-- button type="button" id="reset" class="btn btn-light navbar-btn" >Reset</button>
+                     <button type="button" id="release" class="btn btn-light navbar-btn" >Rel</button-->
+                      
+        </div>
+     </div>
+    
+      <div id="slider-container" class="container-fluid w-100 position-absolute" style="z-index:-10;padding:0px; top:0px">
+        <div class="slider-pro" id="my-slider">
+              <div class="sp-slides">
+                  <div class="sp-slide">
+                      <img class="sp-image" src="start.png"/>
+                  </div>
+                  
+              </div>
+          </div>
+    </div>
+    
+  
+  
+  </div>
 
 
     <script src="/webjars/jquery/jquery.min.js"></script>
@@ -129,8 +154,6 @@
     <script src="/webjars/tweenjs__tween.js/src/Tween.js"></script>
     
      <script type="text/javascript">
-
-var sliderInitialized = false;
 
 jQuery( document ).ready(function( $ ) {
 		$( '#my-slider' ).sliderPro({

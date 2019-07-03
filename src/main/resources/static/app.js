@@ -7,8 +7,6 @@ export default function(liveImgElement, onStepCallback, onAddSlideCallback, webm
 	
 }
 
-const robot = new PoppyRobot("http://192.168.1.44:8080");
-
 let slides = [];
 
 let webpFrames = [];
@@ -19,38 +17,21 @@ let stepCount = 0;
 let steps = 10;
 let tween = null;
 
+let currentCam = null;
+
 let motionEnabled = true;
 
 let axiosCli = axios.create({
-    timeout: 5,
+    timeout: 5000,
     headers: {
         "Content-Type": "application/json"
     }
   });
 
-var startPosition = {m1:10, m2:-30, m3:-30, m4:50,m5:30};
-var position = Object.assign({}, startPosition);
-var endPosition = { m1: 10, m2:-18, m3:-40, m4:20,m5:50 };
-
-function encode(title) {
-    if (!this.audioBlob)
-      return webm.encode(title, this.w, this.h, this.frameTimeout(), this.frameWebps, null);
-    let fr = new FileReader();
-    let an = this;
-    let promise = new Promise((resolve, reject) => {
-      fr.addEventListener("loadend", evt => {
-        webm.encode(title, an.w, an.h, an.frameTimeout(), an.frameWebps, fr.result)
-            .then(resolve);
-      });
-      fr.readAsArrayBuffer(an.audioBlob);
-    });
-    return promise;
-  }
-
-
-function stepPosition(){
+function snap(){
+    console.log("Snap!");
     var c = document.createElement('canvas');
-    var img = document.getElementById('myImage');
+    var img = document.getElementById('view-finder');
     c.width = img.width;
     c.height = img.height;
     var ctx = c.getContext('2d');
@@ -59,22 +40,13 @@ function stepPosition(){
     
     slides.push(c.toDataURL('image/jpeg',0.95));
     
-    let promise = new Promise(((resolve, reject) => {
-        if (self.requestIdleCallback) {
-          requestIdleCallback(() => {
-            c.toBlob(blob => { resolve(blob) }, 'image/webp');
-          });
-        } else {
-          c.toBlob(blob => { resolve(blob) }, 'image/webp');
-        }
-      }));
-    webpFrames.push(promise);
-      
     $(".sp-slides").append("<div class='sp-slide'><img src='"+slides[slides.length-1]+"''></div>");      
     $('#my-slider' ).sliderPro( 'update' );
     $('#my-slider' ).sliderPro( 'gotoSlide', slides.length );
     
     
+    currentCam.stepForward();
+    /*
 
     if(motionEnabled){
         tween.update(stepCount);
@@ -88,26 +60,42 @@ function stepPosition(){
                  });
         if(stepCount < steps) stepCount++;
     }
+    */
 }
+
+function setCurrentCamera(cam){
+    // Switch to the given camera in the cameras list
+    console.log("CAMERA : Switching to "+cam.name+ " "+cam.host);
+    currentCam = cameras[cam.index];
+    
+    $("#view-finder").attr("src","http://"+cam.host+":"+cam.port+cam.path).prop("crossOrigin","anonymous");
+    $("#motion-preview").attr("src","http://"+cam.host+":"+cam.port+cam.path).prop("crossOrigin","anonymous");
+    $("#camera-label").text(cam.name);
+    
+    // TODO Set the enable motion flag
+   // $("#enable-motion").
+}
+
 jQuery("#step").on("click", function(){
-        stepPosition();
+    snap();
 });
 
-jQuery("#reset").on("click", function(){
-        stepCount = 0;
-        stepPosition();
-});
 jQuery("#undo").on("click", function(){
-         if(motionEnabled){
+         if(currentCam.motionEnabled){
              stepCount=stepCount-2;
              if (stepCount < 0) stepCount = 0;
-             stepPosition();
+             snap();
          }
 });
 
-jQuery("#release").on("click", function(){
-        robot.setAll('compliant' , true);
-  
+
+
+jQuery("#model-motion-setup").on("show.bs.modal", function(){
+    jQuery("#set-start-position").prop('disabled', true);
+    jQuery("#set-end-position").prop('disabled', true);
+});
+jQuery("#model-motion-setup").on("hide.bs.modal", function(){
+    jQuery("#release-motors").prop('disabled', false);
 });
 
 jQuery("#save").on("click", function(){
@@ -126,26 +114,59 @@ jQuery("#save").on("click", function(){
 
 });
 
-jQuery( document ).ready(function( $ ) {
+jQuery("#release-motors").on("click", function(){
+    currentCam.releaseMotors();
+    jQuery("#set-start-position").prop('disabled', false);
+    jQuery("#set-end-position").prop('disabled', false);
+    jQuery("#release-motors").prop('disabled', true);
+});
+
+jQuery("#set-start-position").on("click", function(){
+    currentCam.captureStartPosition();
+});
+
+jQuery("#set-end-position").on("click", function(){
+    currentCam.activateMotors().then( function(){
+        currentCam.captureEndPosition();
+        jQuery("#set-start-position").prop('disabled', true);
+        jQuery("#set-end-position").prop('disabled', true);
+        jQuery("#preview-movement").prop('disabled', false);
+        jQuery("#release-motors").prop('disabled', false);
+    });
     
+});
+
+jQuery("#preview-movement").on("click", function(){
+    currentCam.previewMovement();
+    jQuery("#release-motors").prop('disabled', false);
+});
+
+jQuery( document ).ready(function( $ ) {
+    var that = this;
     axiosCli.get("/config.json").then(function(response){
         // Setup the cameras and the robots
-        response.data.cameras.forEach(function(cam){
-            cameras.push(new Camera(cam.name, cam.host,cam.port, cam.robotPort, cam.path));
+        response.data.cameras.forEach(function(cam, index){
+            cameras.push(new Camera(cam.name, cam.host,cam.port, cam.robotPort, cam.path, index));
             // Setup camera motion dialog and select lists
             $("#camera-dropdown-menu").empty();
-            cameras.forEach(function(cam){
-                $("<a class='dropdown-item'  href='#'>"+cam.name+"</a>")
-                   .appendTo("#camera-dropdown-menu")
-                   .data("camera", cam)
-                   .on("click", function(evt){
-                           evt.preventDefault();
-                           var el= $(evt.target).data('camera');
-                           console.log("Switching to "+el.name+ " "+el.host);
-                        });
-            });
         });
+        
+        cameras.forEach(function(camObject){
+            $("<a class='dropdown-item'  href='#'>"+camObject.name+"</a>")
+            .appendTo("#camera-dropdown-menu")
+            .data("camera", camObject)
+            .on("click", function(evt){
+                    evt.preventDefault();
+                    var c = $(evt.target).data('camera');
+                    setCurrentCamera(c);
+                 });
+            camObject.connect();
+        });
+        
+        setCurrentCamera(cameras[0]);
     }).catch(function (error) {
+        // We could not collect camera configurations !
+        $("#error-toast-msg").text(error);
         $('#errorToast').toast('show');
     });
 
