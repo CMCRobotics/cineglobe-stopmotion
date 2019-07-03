@@ -1,5 +1,3 @@
-console.log(typeof axios);
-    
 class PoppyRobot{
     
     get motors() { return this._motors; }
@@ -46,6 +44,7 @@ class PoppyRobot{
           motor[registerName].set(value)
         );
     }
+
 
 }
 

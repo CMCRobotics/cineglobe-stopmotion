@@ -17,14 +17,27 @@ logging.level:
 stopmotion:
   location: "/tmp/stopmotion"
   cameras:
-    - ip: "192.168.1.44"
-      name: "Camera 1"
-
+    - name: "Camera 1"
+      host: "192.168.1.44"
+      port: 8000
+      robotPort: 8080
+      path: "/stream.mjpg"
+    - name: "Camera 2"
+      host: "192.168.1.44"
+      port: 8000
+      path: "/stream.mjpg"
+      robotPort: 8080
 ---
-spring:
-  profiles: home
-  
+spring.profiles: cern
 stopmotion:
   cameras:
-    - ip: "192.168.1.23"
-      name: "Camera 1"
+    - name: "Camera 1"
+      host: "ergo-nine.cern.ch"
+      port: 8000
+      robotPort: 8080
+      path: "/stream.mjpg"
+    - name: "Camera 2"
+      host: "ergo-nine.cern.ch"
+      port: 8000
+      robotPort: 8080
+      path: "/stream.mjpg"

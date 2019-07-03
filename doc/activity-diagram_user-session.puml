@@ -1,5 +1,9 @@
 @startuml
 start
+:Setup config
+----
+* Obtain cameras list
+;
 repeat
 :New Movie
 ----
@@ -12,10 +16,19 @@ fork
   ----
   * Camera list select
   * Enabled ?
-  * Start
-  * End
   * Steps
   ;
+  repeat
+  fork
+  :Set Start;
+  fork again
+  :Set End;
+  fork again
+  :Preview;
+  end fork
+  repeat while (Finish motion setup?) is (no)
+  -> yes;
+  
 fork again 
   :Switch camera
   ----

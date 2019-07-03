@@ -1,5 +1,8 @@
 import {PoppyRobot} from './poppy/PoppyRobot.js';
-let onAddSlideCallback = null;
+import {Camera} from './camera/Camera.js';
+
+
+
 export default function(liveImgElement, onStepCallback, onAddSlideCallback, webmEncoder, config){
 	
 }
@@ -10,11 +13,20 @@ let slides = [];
 
 let webpFrames = [];
 
+let cameras = [];
+
 let stepCount = 0;
 let steps = 10;
 let tween = null;
 
 let motionEnabled = true;
+
+let axiosCli = axios.create({
+    timeout: 5,
+    headers: {
+        "Content-Type": "application/json"
+    }
+  });
 
 var startPosition = {m1:10, m2:-30, m3:-30, m4:50,m5:30};
 var position = Object.assign({}, startPosition);
@@ -34,6 +46,8 @@ function encode(title) {
     });
     return promise;
   }
+
+
 function stepPosition(){
     var c = document.createElement('canvas');
     var img = document.getElementById('myImage');
@@ -97,21 +111,50 @@ jQuery("#release").on("click", function(){
 });
 
 jQuery("#save").on("click", function(){
-    webm.encode("My video", 800, 480, 1000.0/7, webpFrames, null)
-      .then(blob => {
-        this.exported = blob;
-        let url = URL.createObjectURL(blob);
-        let downloadLink = document.createElement('a');
-        downloadLink.download = filename;
-        downloadLink.href = url;
-        downloadLink.click();
-        URL.revokeObjectURL(url);
-        return blob;
-      });
+    console.log("Saving and downloading...");
+//    webm.encode("My video", 800, 480, 1000.0/7, webpFrames, null)
+//      .then(blob => {
+//        this.exported = blob;
+//        let url = URL.createObjectURL(blob);
+//        let downloadLink = document.createElement('a');
+//        downloadLink.download = filename;
+//        downloadLink.href = url;
+//        downloadLink.click();
+//        URL.revokeObjectURL(url);
+//        return blob;
+//      });
 
 });
 
-robot.connect().then(function(){
+jQuery( document ).ready(function( $ ) {
+    
+    axiosCli.get("/config.json").then(function(response){
+        // Setup the cameras and the robots
+        response.data.cameras.forEach(function(cam){
+            cameras.push(new Camera(cam.name, cam.host,cam.port, cam.robotPort, cam.path));
+            // Setup camera motion dialog and select lists
+            $("#camera-dropdown-menu").empty();
+            cameras.forEach(function(cam){
+                $("<a class='dropdown-item'  href='#'>"+cam.name+"</a>")
+                   .appendTo("#camera-dropdown-menu")
+                   .data("camera", cam)
+                   .on("click", function(evt){
+                           evt.preventDefault();
+                           var el= $(evt.target).data('camera');
+                           console.log("Switching to "+el.name+ " "+el.host);
+                        });
+            });
+        });
+    }).catch(function (error) {
+        $('#errorToast').toast('show');
+    });
+
+});
+
+
+
+
+/*robot.connect().then(function(){
   console.log(robot);
   
   robot.setAll('compliant', false);
@@ -121,4 +164,6 @@ robot.connect().then(function(){
   tween.start(0);
   
 });
+*/
+
 
