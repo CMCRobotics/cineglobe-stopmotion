@@ -21,7 +21,7 @@ class Camera{
     }
     
     connect(){
-        return this.robot.connect();
+        return Promise.all([this.robot.connect(),this.robot.setAll("present_speed",20.0)]);
     }
     
     captureStartPosition(){
