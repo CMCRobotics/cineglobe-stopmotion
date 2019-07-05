@@ -27,12 +27,15 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void store(MultipartFile file) {
+    public void store(String prefixPath,MultipartFile file) {
         try {
             if (file.isEmpty()) {
                 throw new StorageFileNotFoundException("Failed to store empty file " + file.getOriginalFilename());
             }
-            Files.copy(file.getInputStream(), this.rootLocation.resolve(file.getOriginalFilename()));
+            if(!Files.exists(this.rootLocation.resolve(prefixPath))){
+                Files.createDirectories(this.rootLocation.resolve(prefixPath));
+            }
+            Files.copy(file.getInputStream(), this.rootLocation.resolve(Paths.get(prefixPath,file.getOriginalFilename())));
         } catch (IOException e) {
             throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
         }
@@ -73,8 +76,11 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void deleteAll() {
-        FileSystemUtils.deleteRecursively(rootLocation.toFile());
+    public void deleteAll(String prefixPath) throws IOException {
+        if(!Files.exists(this.rootLocation.resolve(prefixPath))){
+            Files.createDirectories(this.rootLocation.resolve(prefixPath));
+        }
+        FileSystemUtils.deleteRecursively(rootLocation.resolve(prefixPath+"/"));
     }
 
     @Override

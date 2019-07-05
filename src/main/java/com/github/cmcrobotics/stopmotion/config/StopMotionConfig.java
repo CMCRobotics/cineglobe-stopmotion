@@ -18,5 +18,10 @@ public class StopMotionConfig implements Serializable {
     @JsonProperty(access = Access.WRITE_ONLY)
     private String location = "upload-dir";
     
+    public Integer framerate = 7;
+    
+    public String ffmpeg = "/usr/bin/ffmpeg";
+    public String ffprobe = "/usr/bin/ffprobe";
+    
     
 }
