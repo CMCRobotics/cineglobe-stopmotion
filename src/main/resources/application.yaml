@@ -16,6 +16,8 @@ logging.level:
 
 stopmotion:
   location: "/tmp/stopmotion"
+  ffmpeg: "ffmpeg"
+  ffprobe: "ffprobe"
   cameras:
     - name: "Camera 1"
       host: "192.168.1.44"
@@ -51,7 +53,7 @@ stopmotion:
       robotPort: 8080
       path: "/stream.mjpg"
     - name: "Camera 2"
-      host: "ergo-twelve.home"
+      host: "ergo-nine.home"
       port: 8000
       robotPort: 8080
       path: "/stream.mjpg"
