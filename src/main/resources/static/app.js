@@ -1,15 +1,11 @@
 import {PoppyRobot} from './poppy/PoppyRobot.js';
 import {Camera} from './camera/Camera.js';
 
-
-
 export default function(liveImgElement, onStepCallback, onAddSlideCallback, webmEncoder, config){
 	
 }
 
 let slides = [];
-
-let webpFrames = [];
 
 let cameras = [];
 
@@ -21,13 +17,28 @@ let currentCam = null;
 
 let motionEnabled = true;
 
+let movieUuid = null;
+
+let  pad = "00000";
+
 let axiosCli = axios.create({
     timeout: 5000,
     headers: {
         "Content-Type": "application/json"
     }
   });
+function dataURItoBlob(dataURI) {
+    var byteString = atob(dataURI.split(',')[1]);
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    var blob = new Blob([ab], {type: mimeString});
+    return blob;
 
+  }
 function snap(){
     console.log("Snap!");
     var c = document.createElement('canvas');
@@ -80,6 +91,10 @@ jQuery("#step").on("click", function(){
     snap();
 });
 
+jQuery("#steps-range").on("input", function(evt){
+    jQuery("#steps-value").text(evt.target.value);
+});
+
 jQuery("#undo").on("click", function(){
          if(currentCam.motionEnabled){
              stepCount=stepCount-2;
@@ -99,19 +114,35 @@ jQuery("#model-motion-setup").on("hide.bs.modal", function(){
 });
 
 jQuery("#save").on("click", function(){
-    console.log("Saving and downloading...");
-//    webm.encode("My video", 800, 480, 1000.0/7, webpFrames, null)
-//      .then(blob => {
-//        this.exported = blob;
-//        let url = URL.createObjectURL(blob);
-//        let downloadLink = document.createElement('a');
-//        downloadLink.download = filename;
-//        downloadLink.href = url;
-//        downloadLink.click();
-//        URL.revokeObjectURL(url);
-//        return blob;
-//      });
+    if(movieUuid != null && slides.length > 0){
+        console.log("Saving and downloading...");
+        var data = new FormData();
 
+        data.append("uuid",movieUuid);
+        
+        slides.forEach(function(slide, index){
+            var str = "" + (index+1);
+            data.append("files", dataURItoBlob(slide), "slide"+pad.substring(0, pad.length - str.length) + str+".jpg")
+        });
+        const config = {
+            headers: { 'content-type': 'multipart/form-data' }
+        }
+        axios.post('/movie/upload', data, config).then(function(){
+            // Show encoding progress modal
+            // If error, hide the modal and toast the error
+            // If success, update the model to indicate how many slides were uploaded
+            
+            // Query the encoding status in a loop and update the modal
+            // If success, display a download link
+            
+            
+            console.log("Movie upload successful");
+        }).catch(function(error){
+            console.log("Movie upload failed ",error);
+        });
+    }
+    
+    
 });
 
 jQuery("#release-motors").on("click", function(){
@@ -164,6 +195,8 @@ jQuery( document ).ready(function( $ ) {
         });
         
         setCurrentCamera(cameras[0]);
+        
+        movieUuid = new Date().getTime();
     }).catch(function (error) {
         // We could not collect camera configurations !
         $("#error-toast-msg").text(error);

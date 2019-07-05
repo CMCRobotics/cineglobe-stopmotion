@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/webjars/slider-pro/dist/css/slider-pro.min.css">
     <link rel="stylesheet" href="/webjars/font-awesome/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/webjars/font-awesome/css/solid.min.css">
     <link rel="stylesheet" href="app.css">  
     
    <style>
@@ -44,22 +45,25 @@
                       </div>
                     </div>
                     <div class="form-group row">
-                        <button type="button" id="release-motors" class="btn btn-primary navbar-btn" >Release Motors</button>
+                        <button type="button" id="release-motors" class="btn btn-info" >Release Motors</button>
                     </div>
                     <div class="form-group row">
                         <div class="btn-group">
-                          <button type="button" id="set-start-position" class="btn btn-light navbar-btn" >Set Start</button>
-                          <button type="button" id="set-end-position" class="btn btn-light navbar-btn" >Set End</button>
+                          <button type="button" id="set-start-position" class="btn btn-light" ><i class="fas fa-download"></i> Set Start</button>
+                          <button type="button" id="set-end-position" class="btn btn-light" >Set End</button>
                           </div>
                     </div>
                     <div class="form-group row">
-                        <button type="button" id="preview-movement" class="btn btn-light navbar-btn" >Preview Movement</button>
+                        <button type="button" id="preview-movement" class="btn btn-lightn" >Preview Movement</button>
                     </div>
                     <div class="form-group row">
-                      <label for="customRange">Steps</label>
+                      <label for="steps-range">Steps</label>&nbsp;<span style="font-weight:900; width:20px" id="steps-value"></span>
                       <div class="col-8">
-                      <input type="range" style="width:200px" class="custom-range" min="3" max="30" step="1" id="customRange" name="points1">
+                        <input type="range" style="width:120px" class="custom-range" min="3" max="30" step="1" id="steps-range" name="points1">
                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <button type="button" id="apply-movement" class="btn btn-primary" ><i class="fas fa-check-circle-o"></i> Apply</button>
                     </div>
                   </form>
                </div>
@@ -115,14 +119,14 @@
                             <!-- a class="dropdown-item" href="#">Camera 1</a>
                             <a class="dropdown-item" href="#">Camera 2</a-->
                           </div>
-                      <button type="button" class="btn btn-info" data-toggle="modal" data-target="#model-motion-setup">Open Modal</button>
-                      <button type="button" id="save" class="btn btn-danger navbar-btn" ><i class="fa fa-save"></i>Save</button>
+                      <button type="button" class="btn btn-info" data-toggle="modal" data-target="#model-motion-setup"><i class="fas fa-cog"></i> Setup</button>
+                      <button type="button" id="save" class="btn btn-danger navbar-btn" ><i class="fas fa-download"></i> Download Video</button>
      </div>
      
-     <div class="container-fluid fixed-bottom w-100" style="padding:5px; z-index:1035">
-        <div style="text-align:right">
-                     <button type="button" id="undo"  class="btn btn-secondary navbar-btn" >Undo</button>
-                     <button type="button" id="step"  class="btn btn-primary navbar-btn" >Step <span id="steps-left" class="badge badge-light">10</span></button>
+     <div class="container-fluid fixed-bottom w-100" style="opacity:60%; padding:8px; z-index:1035">
+        <div style="text-align:right;">
+                     <button type="button" id="undo"  class="btn btn-secondary btn-xl btn-circle" ><i class="fas fa-undo"></i></button>
+                     <button type="button" id="step"  class="btn btn-primary btn-xl btn-oval" ><i class="fas fa-camera"></i> <span id="steps-left" class="badge badge-light">10</span></button>
                      <!-- button type="button" id="reset" class="btn btn-light navbar-btn" >Reset</button>
                      <button type="button" id="release" class="btn btn-light navbar-btn" >Rel</button-->
                       
@@ -149,6 +153,8 @@
     <script src="/webjars/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <script src="/webjars/slider-pro/dist/js/jquery.sliderPro.min.js"></script>
+
+    <!-- script src="/webjars/uuid/v1.js"></script-->
 
     <script src="/webjars/axios/dist/axios.min.js"></script>
     <script src="/webjars/tweenjs__tween.js/src/Tween.js"></script>
