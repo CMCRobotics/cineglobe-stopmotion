@@ -31,7 +31,7 @@ public class MovieStorageController {
                     storageService.store(uuid + "/", file);
                     result.inc();
                 });
-                movieEncodingService.dispatch(uuid);
+                movieEncodingService.dispatch(uuid, 7.0);
             } catch (Exception e) {
                result.error(e.getMessage());
             }

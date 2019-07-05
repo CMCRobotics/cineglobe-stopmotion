@@ -20,8 +20,8 @@ public class StopMotionConfig implements Serializable {
     
     public Integer framerate = 7;
     
-    public String ffmpeg = "/usr/bin/ffmpeg";
-    public String ffprobe = "/usr/bin/ffprobe";
+    public String ffmpeg = "ffmpeg";
+    public String ffprobe = "ffprobe";
     
     
 }
