@@ -1,4 +1,6 @@
+
 @startuml
+
 start
 :Setup config
 ----
@@ -65,4 +67,5 @@ end fork
 repeat while (New movie?) is (yes)
 -> no;
 end
+
 @enduml
