@@ -21,7 +21,20 @@ class Camera{
     }
     
     connect(){
-        return Promise.all([this.robot.connect(),this.robot.setAll("present_speed",20.0)]);
+        return Promise.all([this.robot.connect(),this.robot.setAll("present_speed",10.0)]);
+    }
+    
+    /**
+     * Adopt the settings of the given cam and reset steps
+     */
+    apply(cam){
+        this.motionEnabled = cam.motionEnabled;
+        this.stepCount = cam.stepCount;
+        this.currentStep = 0;
+        this.startPosition = cam.startPosition;
+        this.position = cam.position;
+        this.endPosition = cam.endPosition;
+        this.currentTween = cam.currentTween;
     }
     
     captureStartPosition(){
@@ -41,11 +54,6 @@ class Camera{
         }.bind(this))).catch(function(error){
             throw error;
         });
-    }
-    
-    setStepCount(newCount){
-        // Update the count
-        // Set states
     }
     
     stepForward(){
@@ -79,12 +87,24 @@ class Camera{
         return Promise.all(this.robot.setAll('compliant' , true).concat(this.robot.setAll('led' , '\"green\"')));
     }
     activateMotors(){
-        return Promise.all(this.robot.setAll('compliant' , false).concat(this.robot.setAll('led' , '\"pink\"')));
+        // Activate a timeout for the motors to release if they don't move in a while (release / step / undo
+        return Promise.all(this.robot.setAll('compliant' , false).concat(this.robot.setAll('led' , '\"off\"')));
+    }
+    
+
+    resume(){
+        this.activateMotors().then(function(){
+           if(this.motionEnabled){
+               this.currentStep --;
+               this.stepForward();
+           }
+        }.bind(this));
     }
     
     previewMovement(){
         try{
-            
+            // Perform all steps, then reset the step counter
+            // then release the motors (using the release motors);
                 var robot = this.robot;
                 Promise.all(this.robot.setAll('compliant' , false)).then( function(){
                     robot.set([robot.m1.goal_position,this.startPosition.m1]
@@ -100,9 +120,12 @@ class Camera{
                                        ,[this.robot.m3.goal_position,this.endPosition.m3]
                                        ,[this.robot.m4.goal_position,this.endPosition.m4]
                                        ,[this.robot.m5.goal_position,this.endPosition.m5]
-                                       ,[this.robot.m6.goal_position,this.endPosition.m6]);
+                                       ,[this.robot.m6.goal_position,this.endPosition.m6]).then( 
+                                               function(){
+                                                setTimeout(function(){this.robot.setAll('compliant' , true)}, 1000);
+                                               }.bind(this));
                           }.bind(this)
-                          , 3000);
+                          , 2000);
                       }.bind(this));
                 }.bind(this));
         }catch(error){
