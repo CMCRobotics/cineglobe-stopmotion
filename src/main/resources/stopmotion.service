@@ -1,0 +1,15 @@
+[Unit]
+Description=Stop Motion Java service
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/stopmotion-work
+ExecStart=/opt/stopmotion/app.jar --spring.profiles.active=codez
+SuccessExitStatus=143
+TimeoutStopSec=30
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+
