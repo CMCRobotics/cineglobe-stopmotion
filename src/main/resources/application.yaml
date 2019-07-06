@@ -32,6 +32,7 @@ stopmotion:
 ---
 spring.profiles: cern
 stopmotion:
+  location: "/home/pi/stopmotion-work"
   cameras:
     - name: "Camera 1"
       host: "ergo-nine.cern.ch"
@@ -61,9 +62,10 @@ stopmotion:
 ---
 spring.profiles: swisscom
 stopmotion:
+  location: "/home/pi/stopmotion-work"
   cameras:
     - name: "Camera 1"
-      host: "192.168.43.198"
+      host: "192.168.43.239"
       port: 8000
       robotPort: 8080
       path: "/stream.mjpg"
@@ -75,14 +77,15 @@ stopmotion:
 ---
 spring.profiles: codez
 stopmotion:
+  location: "/home/pi/stopmotion-work"
   cameras:
     - name: "Camera 1"
-      host: "192.168.42.22"
+      host: "192.168.12.22"
       port: 8000
       robotPort: 8080
       path: "/stream.mjpg"
     - name: "Camera 2"
-      host: "192.168.42.19"
+      host: "192.168.12.19"
       port: 8000
       robotPort: 8080
       path: "/stream.mjpg"
