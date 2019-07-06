@@ -44,10 +44,8 @@ public class MovieEncodingService {
         ProcessBuilder pb = new ProcessBuilder(
                 stopMotionConfig.getFfmpeg()
                ,"-y","-v","error"
-               ,"-t","10"
                ,"-f","image2"
                ,"-s","800x480"
-               ,"-loop","1"
                ,"-r", ""+framerate
                ,"-i",Paths.get(this.stopMotionConfig.getLocation(),movieIdentifier,"slide%05d.jpg").toString()
                ,"-r", "30"

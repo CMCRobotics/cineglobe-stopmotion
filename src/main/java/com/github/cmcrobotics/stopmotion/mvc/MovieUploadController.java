@@ -12,7 +12,7 @@ import com.github.cmcrobotics.stopmotion.mvc.dto.UploadResult;
 import com.github.cmcrobotics.stopmotion.service.MovieEncodingService;
 
 @RestController
-public class MovieStorageController {
+public class MovieUploadController {
     @Autowired
     private StorageService storageService;
     @Autowired
