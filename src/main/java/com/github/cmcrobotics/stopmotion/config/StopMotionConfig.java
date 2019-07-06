@@ -23,5 +23,5 @@ public class StopMotionConfig implements Serializable {
     public String ffmpeg = "ffmpeg";
     public String ffprobe = "ffprobe";
     
-    
+    public Integer downloadwait = 3000;
 }

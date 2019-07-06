@@ -3,8 +3,15 @@ package com.github.cmcrobotics.stopmotion.mvc;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +47,14 @@ public class MovieUploadController {
         return result;
     }
     
+    @GetMapping("/movie/get/{movieUuid:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveFile(@PathVariable String movieUuid) {
+
+        Resource file = storageService.loadAsResource(movieUuid+".mp4");
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + file.getFilename() + "\"").contentType(MediaType.APPLICATION_OCTET_STREAM).body(file);
+    }
 //    @GetMapping("/movie/status.json")
 //    public MovieConversionStatus getStatus(@RequestParam("uuid") String uuid){
 //        
