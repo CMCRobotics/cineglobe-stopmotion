@@ -91,7 +91,7 @@
 
 
   <div class="container-fluid w-100 h-90" style="padding:0">
-     <div style="padding:0px; width:100%; text-align:center;">
+     <div id="view-finder-div" style="padding:0px; width:100%; text-align:center;">
        <img id="view-finder" class="img-responsive" src="start.jpg">
      </div>
      
@@ -101,7 +101,7 @@
           </div>
       </nav>
     
-    <div class="container fixed-top" style="top:15px;left:280px; z-index:1035">
+    <div id="top-action-bar" class="container fixed-top" style="top:15px;left:280px; z-index:1035">
                           <a class="dropdown-toggle btn btn-primary" href="#" id="camera-switch" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span id="camera-label">Switch camera</span>
                           </a>
@@ -114,10 +114,19 @@
      <div id="snap-action-bar" class="container-fluid fixed-bottom w-100" style="opacity:60%; padding:8px; z-index:1035">
         <div class="row">
           <div class="col" style="text-align:left;">
-                       <button type="button" id="undo"  class="btn btn-secondary btn-xl btn-oval" ><i class="fas fa-undo"></i></button>
+                       <button type="button" id="show-slider"  class="btn btn-secondary btn-xl btn-oval" ><i class="fas fa-film"></i></button>
+                       <!-- button type="button" id="undo"  class="btn btn-secondary btn-xl btn-oval" ><i class="fas fa-undo"></i></button-->
           </div>
           <div class="col" style="text-align:right;">
                        <button type="button" id="step"  class="btn btn-primary btn-xl btn-oval" ><i class="fas fa-camera"></i> <span id="steps-left" class="badge badge-light">10</span></button>
+          </div>
+        </div>
+     </div>
+     
+     <div id="history-action-bar" class="container-fluid fixed-bottom w-100 " style="display:none; opacity:60%; padding:8px; z-index:1035">
+        <div class="row">
+          <div class="col" style="text-align:left;">
+                       <button type="button" id="show-live"  class="btn btn-secondary btn-xl btn-oval" ><i class="fas fa-video"></i></button>
           </div>
         </div>
      </div>

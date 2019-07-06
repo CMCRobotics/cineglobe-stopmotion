@@ -8,7 +8,7 @@ class Camera{
         this.robotPort = robotPort;
         this.path = path;
         this.index = index;
-        this.stepCount = 10;
+        this.stepCount = 1;
         this.currentStep = 0;
         this.motionEnabled = true;
         
@@ -77,9 +77,13 @@ class Camera{
     
     stepBack(){
         if(this.motionEnabled){
-        // step back
-        // decrease counters
+            this.currentStep = this.currentStep -2;
+            if(this.currentStep < 0){
+                this.currentStep = 0;
+            }
+            this.stepForward();
         }
+        
     }
     
     

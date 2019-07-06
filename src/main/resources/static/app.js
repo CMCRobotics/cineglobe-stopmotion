@@ -94,13 +94,31 @@ jQuery("#steps-range").on("input", function(evt){
 });
 
 jQuery("#undo").on("click", function(){
-         if(currentCam.motionEnabled){
-             stepCount=stepCount-2;
-             if (stepCount < 0) stepCount = 0;
-             snap();
-         }
+     if(currentCam.motionEnabled){
+         currentCam.stepBack();
+     }
+     $('#my-slider' ).sliderPro().find( '.sp-slide' ).eq( slides.length-1 ).remove();
+     slides.pop();
+     $('#my-slider' ).sliderPro( 'update' );
+  //        $('#my-slider' ).sliderPro( 'gotoSlide', slides.length );
+         
 });
 
+jQuery("#show-slider").on("click",function(){
+    $("#snap-action-bar").hide();
+    $("#top-action-bar").hide();
+    $("#history-action-bar").show();
+    $("#slider-container").css("z-index",1000);
+    $("#view-finder-div").hide();
+});
+
+jQuery("#show-live").on("click",function(){
+    $("#snap-action-bar").show();
+    $("#top-action-bar").show();
+    $("#history-action-bar").hide();
+    $("#slider-container").css("z-index",-100);
+    $("#view-finder-div").show();
+});
 
 
 jQuery("#model-motion-setup").on("show.bs.modal", function(){
