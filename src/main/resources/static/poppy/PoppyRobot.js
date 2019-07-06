@@ -1,5 +1,3 @@
-console.log(typeof axios);
-    
 class PoppyRobot{
     
     get motors() { return this._motors; }
@@ -22,6 +20,8 @@ class PoppyRobot{
                 data = data.replace("Infinity","\"Infinity\"");
                 JSON.parse(data).motors.forEach(function(motor){
                     that[motor.name] = new PoppyMotor(motor.name);
+                    
+                    // TODO : change to "that._motors" ?
                     that.motors.set(motor.name, that[motor.name]);
                     motor.registers.forEach(function(register){
                         if(register != "name") {
@@ -46,6 +46,13 @@ class PoppyRobot{
           motor[registerName].set(value)
         );
     }
+    
+    getAll(registerName){
+        return Array.from(this._motors).map( ([name, motor]) => 
+          motor[registerName].get()
+        );
+    }
+
 
 }
 

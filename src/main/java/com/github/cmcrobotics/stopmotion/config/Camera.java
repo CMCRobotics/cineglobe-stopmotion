@@ -4,6 +4,9 @@ import lombok.Data;
 
 @Data
 public class Camera {
-  String ip;
+  String host;
+  Integer port;
+  Integer robotPort;
+  String path;
   String name;
 }

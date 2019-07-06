@@ -1,117 +1,279 @@
 import {PoppyRobot} from './poppy/PoppyRobot.js';
-let onAddSlideCallback = null;
+import {Camera} from './camera/Camera.js';
+
 export default function(liveImgElement, onStepCallback, onAddSlideCallback, webmEncoder, config){
 	
 }
 
-const robot = new PoppyRobot("http://192.168.1.44:8080");
-
 let slides = [];
 
-let webpFrames = [];
+let cameras = [];
 
 let stepCount = 0;
 let steps = 10;
 let tween = null;
 
+let currentCam = null;
+
 let motionEnabled = true;
 
-var startPosition = {m1:10, m2:-30, m3:-30, m4:50,m5:30};
-var position = Object.assign({}, startPosition);
-var endPosition = { m1: 10, m2:-18, m3:-40, m4:20,m5:50 };
+let movieUuid = null;
 
-function encode(title) {
-    if (!this.audioBlob)
-      return webm.encode(title, this.w, this.h, this.frameTimeout(), this.frameWebps, null);
-    let fr = new FileReader();
-    let an = this;
-    let promise = new Promise((resolve, reject) => {
-      fr.addEventListener("loadend", evt => {
-        webm.encode(title, an.w, an.h, an.frameTimeout(), an.frameWebps, fr.result)
-            .then(resolve);
-      });
-      fr.readAsArrayBuffer(an.audioBlob);
+let  pad = "00000";
+
+let introSlideBlob = null;
+
+let uploadPromise = null;
+
+let downloadWait;
+
+let axiosCli = axios.create({
+    timeout: 5000,
+    headers: {
+        "Content-Type": "application/json"
+    }
+  });
+
+let previewCam = null;
+
+function delayedPromise(ms){
+    return new Promise( function (resolve){
+      console.log("set timeout at "+ms);  
+      setTimeout(resolve, ms);
     });
-    return promise;
+}
+
+
+function dataURItoBlob(dataURI) {
+    var byteString = atob(dataURI.split(',')[1]);
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    var blob = new Blob([ab], {type: mimeString});
+    return blob;
+
   }
-function stepPosition(){
+
+function getJpegDataURLForImage(imgElement){
     var c = document.createElement('canvas');
-    var img = document.getElementById('myImage');
-    c.width = img.width;
-    c.height = img.height;
+    c.width = imgElement.width;
+    c.height = imgElement.height;
     var ctx = c.getContext('2d');
     
-    ctx.drawImage(img, 0, 0);
+    ctx.drawImage(imgElement, 0, 0);
+    return c.toDataURL('image/jpeg',0.95)
+}
+function snap(){
+    console.log("Snap!");
+    var img = document.getElementById('view-finder');
+    slides.push(getJpegDataURLForImage(img));
     
-    slides.push(c.toDataURL('image/jpeg',0.95));
-    
-    let promise = new Promise(((resolve, reject) => {
-        if (self.requestIdleCallback) {
-          requestIdleCallback(() => {
-            c.toBlob(blob => { resolve(blob) }, 'image/webp');
-          });
-        } else {
-          c.toBlob(blob => { resolve(blob) }, 'image/webp');
-        }
-      }));
-    webpFrames.push(promise);
-      
     $(".sp-slides").append("<div class='sp-slide'><img src='"+slides[slides.length-1]+"''></div>");      
     $('#my-slider' ).sliderPro( 'update' );
     $('#my-slider' ).sliderPro( 'gotoSlide', slides.length );
-    
-    
-
-    if(motionEnabled){
-        tween.update(stepCount);
-        robot.set([robot.m1.goal_position,position.m1]
-                 ,[robot.m2.goal_position,position.m2]
-                 ,[robot.m3.goal_position,position.m3]
-                 ,[robot.m4.goal_position,position.m4]
-                 ,[robot.m5.goal_position,position.m5])
-                 .then(function(response){
-                         console.log("Step "+stepCount);
-                 });
-        if(stepCount < steps) stepCount++;
-    }
+    currentCam.stepForward();
 }
+
+function setCurrentCamera(cam){
+    // Switch to the given camera in the cameras list
+    console.log("CAMERA : Switching to "+cam.name+ " "+cam.host);
+    currentCam = cameras[cam.index];
+    $("#steps-left").text(currentCam.stepCount - currentCam.currentStep);
+    $("#view-finder").attr("src","http://"+cam.host+":"+cam.port+cam.path).prop("crossOrigin","anonymous");
+    $("#camera-label").text(cam.name);
+    
+}
+
 jQuery("#step").on("click", function(){
-        stepPosition();
+    snap();
+    $("#steps-left").text(currentCam.stepCount - currentCam.currentStep);
 });
 
-jQuery("#reset").on("click", function(){
-        stepCount = 0;
-        stepPosition();
-});
-jQuery("#undo").on("click", function(){
-         if(motionEnabled){
-             stepCount=stepCount-2;
-             if (stepCount < 0) stepCount = 0;
-             stepPosition();
-         }
+jQuery("#steps-range").on("input", function(evt){
+    jQuery("#steps-value").text(evt.target.value);
+    previewCam.stepCount = evt.target.value;
 });
 
-jQuery("#release").on("click", function(){
-        robot.setAll('compliant' , true);
-  
+//jQuery("#undo").on("click", function(){
+//     if(currentCam.motionEnabled){
+//         currentCam.stepBack();
+//     }
+//     $('#my-slider' ).sliderPro().find( '.sp-slide' ).eq( slides.length-1 ).remove();
+//     slides.pop();
+//     $('#my-slider' ).sliderPro( 'update' );
+//  //        $('#my-slider' ).sliderPro( 'gotoSlide', slides.length );
+//         
+//});
+
+jQuery("#show-slider").on("click",function(){
+    $("#snap-action-bar").hide();
+    $("#top-action-bar").hide();
+    $("#history-action-bar").show();
+    $("#slider-container").css("z-index",1000);
+    $("#view-finder-div").hide();
 });
+
+jQuery("#show-live").on("click",function(){
+    $("#snap-action-bar").show();
+    $("#top-action-bar").show();
+    $("#history-action-bar").hide();
+    $("#slider-container").css("z-index",-100);
+    $("#view-finder-div").show();
+});
+
+
+jQuery("#model-motion-setup").on("show.bs.modal", function(){
+    // Update the steps to match the camera's
+    jQuery("#steps-range").val(currentCam.stepCount);
+    jQuery("#steps-value").text(currentCam.stepCount);
+    
+    //jQuery("#preview-movement").prop('disabled', true);
+    jQuery("#apply-movement").prop('disabled', true);
+    // Setup a preview camera
+    previewCam = new Camera(currentCam.name, currentCam.host,currentCam.port, currentCam.robotPort, currentCam.path, -1);
+    previewCam.connect().then(function(){
+        $("#motion-preview").attr("src","http://"+previewCam.host+":"+previewCam.port+previewCam.path).prop("crossOrigin","anonymous");
+        previewCam.releaseMotors();
+    });
+});
+
+jQuery("#model-motion-setup").on("hidden.bs.modal", function(){
+    currentCam.resume();
+});
+
+jQuery("#set-start-position").on("click", function(){
+    previewCam.captureStartPosition();
+});
+
+jQuery("#set-end-position").on("click", function(){
+    previewCam.captureEndPosition();
+   // jQuery("#preview-movement").prop('disabled', false);
+    jQuery("#apply-movement").prop('disabled', false);
+    
+});
+
+jQuery("#apply-movement").on("click", function(){
+    previewCam.activateMotors();
+    // Update the currentCam with the contents of previewCam, reset motion steps
+    currentCam.apply(previewCam);
+    $("#steps-left").text(currentCam.stepCount - currentCam.currentStep);
+    jQuery("#model-motion-setup").modal('hide');
+});
+
+//jQuery("#preview-movement").on("click", function(){
+//    previewCam.previewMovement();
+//});
+
 
 jQuery("#save").on("click", function(){
-    webm.encode("My video", 800, 480, 1000.0/7, webpFrames, null)
-      .then(blob => {
-        this.exported = blob;
-        let url = URL.createObjectURL(blob);
-        let downloadLink = document.createElement('a');
-        downloadLink.download = filename;
-        downloadLink.href = url;
-        downloadLink.click();
-        URL.revokeObjectURL(url);
-        return blob;
-      });
+    if(movieUuid != null && slides.length > 0){
+        uploadPromise = new Promise(function(resolve, reject){
+            var thatResolve = resolve;
+            var thatReject = reject;
+            console.log("Saving and uploading...");
+            var data = new FormData();
+
+            data.append("uuid",movieUuid);
+            
+            var offset = 0;
+            // We include two seconds of intro slide (14 frames)
+            for(var i = 0 ; i <=14 ; i++){
+                var str = "" + (i+1);
+                data.append("files", introSlideBlob, "slide"+pad.substring(0, pad.length - str.length) + str+".jpg");
+                offset++;
+            }
+            
+            // We include all further slides
+            slides.forEach(function(slide, index){
+                var str = "" + (offset+index+1);
+                data.append("files", dataURItoBlob(slide), "slide"+pad.substring(0, pad.length - str.length) + str+".jpg")
+            });
+            const config = {
+                headers: { 'content-type': 'multipart/form-data' }
+            }
+            axios.post('/movie/upload', data, config).then(function(){
+                // Show encoding progress modal
+                // If error, hide the modal and toast the error
+                // If success, update the model to indicate how many slides were uploaded
+                $("#download-modal-title").text("Encoding your video...");
+                $("#download-link").hide();
+                $("#download-spinner").show();
+                $("#download-link").attr("href","/movie/get/"+movieUuid);
+                
+                delayedPromise(downloadWait).then(function(){
+                    $("#download-modal-title").text("Your movie is ready !");
+                    $("#download-spinner").hide();
+                    $("#download-link").show();
+                });
+               
+                
+                $("#downloadModal").modal("show");
+                // Query the encoding status in a loop and update the modal
+                // If success, display a download link
+                console.log("Movie upload successful");
+                
+                
+            }.bind(this)).catch(function(error){
+                console.log("Movie upload failed ",error);
+                thatReject(error);
+            });
+            
+        }.bind(this))
+        ;
+    }
+});
+
+
+jQuery( document ).ready(function( $ ) {
+    var that = this;
+    
+    var introImage = $("#view-finder")[0];
+    introSlideBlob = dataURItoBlob(getJpegDataURLForImage(introImage));
+    
+    axiosCli.get("/config.json").then(function(response){
+        downloadWait = response.data.downloadwait;
+        // Setup the cameras and the robots
+        response.data.cameras.forEach(function(cam, index){
+            cameras.push(new Camera(cam.name, cam.host,cam.port, cam.robotPort, cam.path, index));
+            // Setup camera motion dialog and select lists
+            $("#camera-dropdown-menu").empty();
+            
+        });
+        
+        cameras.forEach(function(camObject){
+            $("<a class='dropdown-item'  href='#'>"+camObject.name+"</a>")
+            .appendTo("#camera-dropdown-menu")
+            .data("camera", camObject)
+            .on("click", function(evt){
+                    evt.preventDefault();
+                    var c = $(evt.target).data('camera');
+                    setCurrentCamera(c);
+                 });
+            camObject.connect().then(function(){
+                Promise.all([camObject.captureStartPosition(), camObject.captureEndPosition()]);
+                $("#steps-left").text(currentCam.stepCount - currentCam.currentStep);
+            });
+        });
+        
+        setCurrentCamera(cameras[0]);
+        
+        movieUuid = new Date().getTime();
+    }).catch(function (error) {
+        // We could not collect camera configurations !
+        $("#toast-body").innerHtml("Something went wrong, please try again or call for assistance.<br>"
+                +"<small>( Details : <span id='toast-msg'>error</span> )</small>");
+        $('#msgToast').toast('show');
+    });
 
 });
 
-robot.connect().then(function(){
+
+
+
+/*robot.connect().then(function(){
   console.log(robot);
   
   robot.setAll('compliant', false);
@@ -121,4 +283,6 @@ robot.connect().then(function(){
   tween.start(0);
   
 });
+*/
+
 
