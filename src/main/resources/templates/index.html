@@ -26,7 +26,7 @@
 <body style="padding-left: 0px; padding-right: 0px;background-color:black">
 
   <div id="model-motion-setup" class="modal fade" >
-    <div class="modal-dialog modal-lg" style="max-width: 90% !important;">
+    <div class="modal-dialog modal-lg show" style="max-width: 90% !important;">
       <div class="modal-content">
   
         <div class="modal-header">
@@ -38,23 +38,17 @@
             <div class="row">
                <div class="col-4 p-4">
                    <form class="form">
-                    <div class="form-group row">
-                      <div class="custom-control custom-switch switch-lg">
-                        <input id="enable-motion" type="checkbox" class="custom-control-input">
+                    <!-- div class="form-group row">
+                      <div class="custom-control custom-switch custom-switch-lg">
+                        <input id="enable-motion" type="checkbox" class="custom-control-input switch-lg">
                         <label class="custom-control-label" for="enable-motion">Enable motion</label>
                       </div>
-                    </div>
+                    </div-->
                     <div class="form-group row">
-                        <button type="button" id="release-motors" class="btn btn-info" >Release Motors</button>
-                    </div>
-                    <div class="form-group row">
-                        <div class="btn-group">
-                          <button type="button" id="set-start-position" class="btn btn-light" ><i class="fas fa-download"></i> Set Start</button>
-                          <button type="button" id="set-end-position" class="btn btn-light" >Set End</button>
+                        <div class="btn-group btn-block">
+                          <button type="button" id="set-start-position" class="btn btn-light" ><i class="fas fa-caret-right"></i> Set Start</button>
+                          <button type="button" id="set-end-position" class="btn btn-light" >Set End <i class="fas fa-caret-left"></i></button>
                           </div>
-                    </div>
-                    <div class="form-group row">
-                        <button type="button" id="preview-movement" class="btn btn-lightn" >Preview Movement</button>
                     </div>
                     <div class="form-group row">
                       <label for="steps-range">Steps</label>&nbsp;<span style="font-weight:900; width:20px" id="steps-value"></span>
@@ -63,23 +57,21 @@
                        </div>
                     </div>
                     <div class="form-group row">
-                        <button type="button" id="apply-movement" class="btn btn-primary" ><i class="fas fa-check-circle-o"></i> Apply</button>
+                        <button type="button" id="preview-movement" class="btn btn-light" ><i class="fas fa-exchange-alt"></i> Preview Movement</button>
+                    </div>
+                    <div class="form-group row">
+                        <button type="button" id="apply-movement" class="btn btn-primary btn-block" ><i class="fas fa-check-circle"></i> Apply</button>
                     </div>
                   </form>
                </div>
                <div class="col-8 p-2">
                 <div style="text-align:center">
-                  <img id="motion-preview" class="img-fluid" src="https://via.placeholder.com/400x240?text=Preview+Image">
+                  <img id="motion-preview" class="img-fluid" src="start.jpg">
                 </div>
                 </div>
             
             </div>
         </div>
-  
-        <!-- div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div-->
-  
       </div>
     </div>
   </div>
@@ -100,11 +92,9 @@
 
   <div class="container-fluid w-100 h-90" style="padding:0">
      <div style="padding:0px; width:100%; text-align:center;">
-       <!--  img id="view-finder" crossOrigin="anonymous" class="img-responsive" src="http://ergo-nine.cern.ch:8000/stream.mjpg"-->
-       <img id="view-finder" class="img-responsive" src="start.png">
+       <img id="view-finder" class="img-responsive" src="start.jpg">
      </div>
      
-  
      <nav class="navbar fixed-top  navbar-expand-sm navbar-dark">
           <a class="navbar-brand" href="#"><strong><img src="cineglobe-white.png" width="100"></strong></a>
           <div  id="navbarSupportedContent">
@@ -116,28 +106,28 @@
                             <span id="camera-label">Switch camera</span>
                           </a>
                           <div id="camera-dropdown-menu" class="dropdown-menu" aria-labelledby="camera-switch">
-                            <!-- a class="dropdown-item" href="#">Camera 1</a>
-                            <a class="dropdown-item" href="#">Camera 2</a-->
                           </div>
                       <button type="button" class="btn btn-info" data-toggle="modal" data-target="#model-motion-setup"><i class="fas fa-cog"></i> Setup</button>
                       <button type="button" id="save" class="btn btn-danger navbar-btn" ><i class="fas fa-download"></i> Download Video</button>
      </div>
      
-     <div class="container-fluid fixed-bottom w-100" style="opacity:60%; padding:8px; z-index:1035">
-        <div style="text-align:right;">
-                     <button type="button" id="undo"  class="btn btn-secondary btn-xl btn-circle" ><i class="fas fa-undo"></i></button>
-                     <button type="button" id="step"  class="btn btn-primary btn-xl btn-oval" ><i class="fas fa-camera"></i> <span id="steps-left" class="badge badge-light">10</span></button>
-                     <!-- button type="button" id="reset" class="btn btn-light navbar-btn" >Reset</button>
-                     <button type="button" id="release" class="btn btn-light navbar-btn" >Rel</button-->
-                      
+     <div id="snap-action-bar" class="container-fluid fixed-bottom w-100" style="opacity:60%; padding:8px; z-index:1035">
+        <div class="row">
+          <div class="col" style="text-align:left;">
+                       <button type="button" id="undo"  class="btn btn-secondary btn-xl btn-oval" ><i class="fas fa-undo"></i></button>
+          </div>
+          <div class="col" style="text-align:right;">
+                       <button type="button" id="step"  class="btn btn-primary btn-xl btn-oval" ><i class="fas fa-camera"></i> <span id="steps-left" class="badge badge-light">10</span></button>
+          </div>
         </div>
      </div>
+
     
       <div id="slider-container" class="container-fluid w-100 position-absolute" style="z-index:-10;padding:0px; top:0px">
         <div class="slider-pro" id="my-slider">
               <div class="sp-slides">
                   <div class="sp-slide">
-                      <img class="sp-image" src="start.png"/>
+                      <img class="sp-image" src="start.jpg"/>
                   </div>
                   
               </div>
